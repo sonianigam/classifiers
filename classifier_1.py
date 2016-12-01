@@ -9,7 +9,7 @@ def preprocess(images):
     #this function is suggested to help build your classifier. 
     #You might want to do something with the images before 
     #handing them to the classifier. Right now it does nothing.
-    return [i.flatten() for i in images]
+    return np.array([i.flatten() for i in images])
 
 def build_classifier(images, labels):
     #this will actually build the classifier. In general, it
@@ -17,8 +17,8 @@ def build_classifier(images, labels):
     #return the output of sklearn. Right now it does nothing.
     classifier = KNeighborsClassifier(n_neighbors=10)
 
-    labels = np.array(labels)
-    images = np.array(images)
+    #labels = np.array(labels)
+    #images = np.array(images)
     labels.shape = labels.shape[0]
 
     classifier.fit(images, labels)
@@ -36,6 +36,7 @@ def save_classifier(classifier, training_set, training_labels):
 
 def classify(images, classifier):
     #runs the classifier on a set of images. 
+    "entered prediction"
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
@@ -55,10 +56,10 @@ if __name__ == "__main__":
 
         total = len(images)
         split = int(total/4)
-        test_images = images[0:split]
-        test_labels = labels[0:split]
-        train_images = images[split:]
-        train_labels = labels[split:]
+        test_images = images[0:split][:2]
+        test_labels = labels[0:split][:2]
+        train_images = images[split:][:2]
+        train_labels = labels[split:][:2]
 
         training_set.extend(train_images)
         training_labels.extend(train_labels)
@@ -72,6 +73,8 @@ if __name__ == "__main__":
     training_labels = preprocess(training_labels)
     testing_set = preprocess(testing_set)
     testing_labels = preprocess(testing_labels)
+    print len(testing_set)
+    print testing_set.shape
     
     # pick training and testing set
     # YOU HAVE TO CHANGE THIS TO PICK DIFFERENT SET OF DATA
