@@ -1,6 +1,9 @@
 import pickle
 import sklearn
-from sklearn import svm # this is an example of using SVM
+from sklearn.neighbors import KNeighborsClassifier
+from mnist import load_mnist
+import numpy as np
+
 
 def preprocess(images):
     #this function is suggested to help build your classifier. 
@@ -12,8 +15,14 @@ def build_classifier(images, labels):
     #this will actually build the classifier. In general, it
     #will call something from sklearn to build it, and it must
     #return the output of sklearn. Right now it does nothing.
-    classifier = svm.SVC()
+    classifier = KNeighborsClassifier(n_neighbors=10)
+
+    labels = np.array(labels)
+    images = np.array(images)
+    labels.shape = labels.shape[0]
+
     classifier.fit(images, labels)
+
     return classifier
 
 ##the functions below are required
@@ -21,9 +30,8 @@ def save_classifier(classifier, training_set, training_labels):
     #this saves the classifier to a file "classifier" that we will
     #load from. It also saves the data that the classifier was trained on.
     import pickle
-    pickle.dump(classifier, open('classifier_1.p', 'w'))
-    pickle.dump(training_set, open('training_set.p', 'w'))
-    pickle.dump(training_labels, open('training_labels.p', 'w'))
+    pickle.dump(classifier, open('classifier_1.p', 'wb'))
+
 
 
 def classify(images, classifier):
@@ -35,21 +43,43 @@ def error_measure(predicted, actual):
 
 if __name__ == "__main__":
 
+    training_set = []
+    training_labels = []
+    testing_set = []
+    testing_labels = []
+
+
     # Code for loading data
-    
+    for x in xrange(0,10):
+        images, labels = load_mnist(digits=[x], path='.')
+
+        total = len(images)
+        split = int(total/4)
+        test_images = images[0:split]
+        test_labels = labels[0:split]
+        train_images = images[split:]
+        train_labels = labels[split:]
+
+        training_set.extend(train_images)
+        training_labels.extend(train_labels)
+
+        testing_set.extend(test_images)
+        testing_labels.extend(test_labels)
+
+        
     # preprocessing
-    images = preprocess(images)
+    training_set = preprocess(training_set)
+    training_labels = preprocess(training_labels)
+    testing_set = preprocess(testing_set)
+    testing_labels = preprocess(testing_labels)
     
     # pick training and testing set
     # YOU HAVE TO CHANGE THIS TO PICK DIFFERENT SET OF DATA
-    training_set = images[0:1000]
-    training_labels = labels[0:1000]
-    testing_set = images[-100:]
-    testing_labels = labels[-100:]
+
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
     classifier = build_classifier(training_set, training_labels)
     save_classifier(classifier, training_set, training_labels)
-    classifier = pickle.load(open('classifier'))
+    classifier = pickle.load(open('classifier_1.p', 'rb'))
     predicted = classify(testing_set, classifier)
     print error_measure(predicted, testing_labels)
