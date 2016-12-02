@@ -40,11 +40,9 @@ def classify(images, classifier):
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
-    print predicted
-    print actual
     conf_matrix = confusion_matrix(actual, predicted)
     print conf_matrix
-    return sklearn.metrics.f1_score(actual, predicted)
+    return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 def handle_data(divisions=4, iteration=0):
     training_set = []
