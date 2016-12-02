@@ -4,7 +4,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from mnist import load_mnist
 from sklearn.metrics import confusion_matrix
 import numpy as np
-from sklearn.model_selection import KFold, cross_val_score
 
 def preprocess(images):
     #this function is suggested to help build your classifier.
@@ -57,15 +56,14 @@ def handle_data(divisions=4, iteration=0):
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
-        images[:1000]
-        labels[:1000]
+        images = images[:10]
+        labels = labels[:10]
 
         total = len(images)
         split = int(total / divisions)
 
         test_images = images[0:split]
         test_labels = labels[0:split]
-
 
         train_images =  images[split:]
         train_labels = labels[split:]
