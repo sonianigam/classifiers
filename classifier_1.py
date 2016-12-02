@@ -47,24 +47,25 @@ def error_measure(predicted, actual):
     print conf_matrix
     return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
 
-if __name__ == "__main__":
-
+def handle_data(divisions=4, iteration=1):
     training_set = []
     training_labels = []
     testing_set = []
     testing_labels = []
 
-
     # Code for loading data
-    for x in xrange(0,10):
+    for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
         total = len(images)
-        split = int(total/4)
-        test_images = images[0:split]
-        test_labels = labels[0:split]
-        train_images = images[split:]
-        train_labels = labels[split:]
+        split = int(total / divisions)
+
+        test_images = images[(split*iteration):(split*iteration)+split][:2]
+        test_labels = labels[(split*iteration):(split*iteration)+split][:2]
+
+        
+        train_images = (images[0:(split*iteration)] + images[(split*iteration)+split:])[:2]
+        train_labels = (labels[0:(split*iteration)] + images[(split*iteration)+split:])[:2]
 
         training_set.extend(train_images)
         training_labels.extend(train_labels)
@@ -72,12 +73,24 @@ if __name__ == "__main__":
         testing_set.extend(test_images)
         testing_labels.extend(test_labels)
 
-        
+
     # preprocessing
     training_set = preprocess(training_set)
     training_labels = preprocess(training_labels)
     testing_set = preprocess(testing_set)
     testing_labels = preprocess(testing_labels)
+
+    return training_set, training_labels, testing_set, testing_labels
+
+if __name__ == "__main__":
+
+    training_set = []
+    training_labels = []
+    testing_set = []
+    testing_labels = []
+
+    training_set, training_labels, testing_set, testing_labels = handle_data()
+ 
     
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
