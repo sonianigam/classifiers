@@ -2,6 +2,7 @@ import pickle
 import sklearn
 from sklearn.neighbors import KNeighborsClassifier
 from mnist import load_mnist
+from sklearn.metrics import confusion_matrix
 import numpy as np
 
 
@@ -36,10 +37,14 @@ def save_classifier(classifier, training_set, training_labels):
 
 def classify(images, classifier):
     #runs the classifier on a set of images. 
-    "entered prediction"
+    print "entered prediction"
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
+    print predicted
+    print actual
+    conf_matrix = confusion_matrix(actual, predicted)
+    print conf_matrix
     return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
 
 if __name__ == "__main__":
@@ -56,10 +61,10 @@ if __name__ == "__main__":
 
         total = len(images)
         split = int(total/4)
-        test_images = images[0:split][:2]
-        test_labels = labels[0:split][:2]
-        train_images = images[split:][:2]
-        train_labels = labels[split:][:2]
+        test_images = images[0:split]
+        test_labels = labels[0:split]
+        train_images = images[split:]
+        train_labels = labels[split:]
 
         training_set.extend(train_images)
         training_labels.extend(train_labels)
@@ -73,12 +78,7 @@ if __name__ == "__main__":
     training_labels = preprocess(training_labels)
     testing_set = preprocess(testing_set)
     testing_labels = preprocess(testing_labels)
-    print len(testing_set)
-    print testing_set.shape
     
-    # pick training and testing set
-    # YOU HAVE TO CHANGE THIS TO PICK DIFFERENT SET OF DATA
-
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
     classifier = build_classifier(training_set, training_labels)
