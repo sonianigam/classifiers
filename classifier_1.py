@@ -44,7 +44,7 @@ def error_measure(predicted, actual):
     print actual
     conf_matrix = confusion_matrix(actual, predicted)
     print conf_matrix
-    return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
+    return sklearn.metrics.f1_score(actual, predicted)
 
 def handle_data(divisions=4, iteration=0):
     training_set = []
@@ -56,8 +56,8 @@ def handle_data(divisions=4, iteration=0):
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
-        images = images[:10]
-        labels = labels[:10]
+        images = images[:100]
+        labels = labels[:100]
 
         total = len(images)
         split = int(total / divisions)
@@ -89,7 +89,6 @@ if __name__ == "__main__":
     training_labels = []
     testing_set = []
     testing_labels = []
-
 
     training_set, training_labels, testing_set, testing_labels = handle_data()
 
