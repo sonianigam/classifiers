@@ -4,11 +4,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from mnist import load_mnist
 from sklearn.metrics import confusion_matrix
 import numpy as np
-
+from sklearn.model_selection import KFold, cross_val_score
 
 def preprocess(images):
-    #this function is suggested to help build your classifier. 
-    #You might want to do something with the images before 
+    #this function is suggested to help build your classifier.
+    #You might want to do something with the images before
     #handing them to the classifier. Right now it does nothing.
     return np.array([i.flatten() for i in images])
 
@@ -36,7 +36,7 @@ def save_classifier(classifier, training_set, training_labels):
 
 
 def classify(images, classifier):
-    #runs the classifier on a set of images. 
+    #runs the classifier on a set of images.
     print "entered prediction"
     return classifier.predict(images)
 
@@ -47,7 +47,7 @@ def error_measure(predicted, actual):
     print conf_matrix
     return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
 
-def handle_data(divisions=4, iteration=1):
+def handle_data(divisions=4, iteration=0):
     training_set = []
     training_labels = []
     testing_set = []
@@ -57,15 +57,18 @@ def handle_data(divisions=4, iteration=1):
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
+        images[:1000]
+        labels[:1000]
+
         total = len(images)
         split = int(total / divisions)
 
-        test_images = images[(split*iteration):(split*iteration)+split][:2]
-        test_labels = labels[(split*iteration):(split*iteration)+split][:2]
+        test_images = images[0:split]
+        test_labels = labels[0:split]
 
-        
-        train_images = (images[0:(split*iteration)] + images[(split*iteration)+split:])[:2]
-        train_labels = (labels[0:(split*iteration)] + images[(split*iteration)+split:])[:2]
+
+        train_images =  images[split:]
+        train_labels = labels[split:]
 
         training_set.extend(train_images)
         training_labels.extend(train_labels)
@@ -89,9 +92,8 @@ if __name__ == "__main__":
     testing_set = []
     testing_labels = []
 
+
     training_set, training_labels, testing_set, testing_labels = handle_data()
- 
-    
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
     classifier = build_classifier(training_set, training_labels)
