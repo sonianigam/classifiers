@@ -4,6 +4,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from mnist import load_mnist
 from sklearn.metrics import confusion_matrix
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 def preprocess(images):
     #this function is suggested to help build your classifier.
@@ -42,6 +44,8 @@ def classify(images, classifier):
 def error_measure(predicted, actual):
     conf_matrix = confusion_matrix(actual, predicted)
     print conf_matrix
+
+
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 def handle_data(divisions=4, iteration=0):
@@ -74,12 +78,27 @@ def handle_data(divisions=4, iteration=0):
 
 
     # preprocessing
+    raw_testing_set = testing_set
     training_set = preprocess(training_set)
     training_labels = preprocess(training_labels)
     testing_set = preprocess(testing_set)
     testing_labels = preprocess(testing_labels)
 
-    return training_set, training_labels, testing_set, testing_labels
+    return training_set, training_labels, testing_set, testing_labels, raw_testing_set
+
+def save_images(predicted, actual, images):
+    k = 0
+    misclassified = []
+    for x in xrange(len(images)):
+        if k > 5:
+            return
+        elif predicted[x] != actual[x]:
+            misclassified.append(images[x])
+    for i in xrange(5):
+        plt.imshow(misclassified[i], cmap = 'gray')
+        plt.title('Misclassified Image')
+        plt.show()
+
 
 if __name__ == "__main__":
 
@@ -88,11 +107,13 @@ if __name__ == "__main__":
     testing_set = []
     testing_labels = []
 
-    training_set, training_labels, testing_set, testing_labels = handle_data()
+    training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data()
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
     classifier = build_classifier(training_set, training_labels)
     save_classifier(classifier, training_set, training_labels)
     classifier = pickle.load(open('classifier_1.p', 'rb'))
     predicted = classify(testing_set, classifier)
+    save_images(predicted, testing_labels, raw_testing_set)
+
     print error_measure(predicted, testing_labels)
