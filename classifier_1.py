@@ -89,14 +89,16 @@ def handle_data(divisions=4, iteration=0):
 def save_images(predicted, actual, images):
     k = 0
     misclassified = []
+    labels = []
     for x in xrange(len(images)):
         if k > 5:
             return
         elif predicted[x] != actual[x]:
             misclassified.append(images[x])
+            labels.append(predicted[x])
     for i in xrange(5):
         plt.imshow(misclassified[i], cmap = 'gray')
-        plt.title('Misclassified Image')
+        plt.title('Misclassified Image As: ' + str(labels[i]))
         plt.show()
 
 
