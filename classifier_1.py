@@ -14,11 +14,11 @@ def preprocess(images):
     #handing them to the classifier. Right now it does nothing.
     return np.array([i.flatten() for i in images])
 
-def build_classifier(images, labels):
+def build_classifier(images, labels, neighbors=5):
     #this will actually build the classifier. In general, it
     #will call something from sklearn to build it, and it must
     #return the output of sklearn. Right now it does nothing.
-    classifier = KNeighborsClassifier(n_neighbors=5)
+    classifier = KNeighborsClassifier(n_neighbors=neighbors)
 
     #labels = np.array(labels)
     #images = np.array(images)
@@ -105,7 +105,7 @@ def save_images(predicted, actual, images, d):
         plt.savefig(str(d) + "_" + title)
 
 def experiment_one():
-    divisions = [2,5,10]
+    divisions = [2,5,10,20,50]
 
     for d in divisions:
         training_set = []
@@ -113,7 +113,7 @@ def experiment_one():
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.1)
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.2)
         print '========================' + str(d) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
@@ -123,7 +123,27 @@ def experiment_one():
         save_images(predicted, testing_labels, raw_testing_set, d)
         print error_measure(predicted, testing_labels)
 
+def experiment_two():
+    neighbors = [1,5,10,20,50]
+
+    for n in neighbors:
+        training_set = []
+        training_labels = []
+        testing_set = []
+        testing_labels = []
+
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=50, size=.2)
+        print '========================' + str(n) + ' ==================================='
+        #build_classifier is a function that takes in training data and outputs an sklearn classifier.
+        classifier = build_classifier(training_set, training_labels, neighbors=n)
+        save_classifier(classifier, training_set, training_labels)
+        classifier = pickle.load(open('classifier_1.p', 'rb'))
+        predicted = classify(testing_set, classifier)
+        save_images(predicted, testing_labels, raw_testing_set, n)
+        print error_measure(predicted, testing_labels)
+
 
 if __name__ == "__main__":
-    experiment_one()
+    #experiment_one()
+    experiment_two()
 
