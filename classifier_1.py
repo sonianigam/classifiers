@@ -48,7 +48,7 @@ def error_measure(predicted, actual):
 
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
-def handle_data(training_size, size=.1):
+def handle_data(training_size):
     training_set = []
     training_labels = []
     testing_set = []
@@ -57,9 +57,6 @@ def handle_data(training_size, size=.1):
     # Code for loading data
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
-
-        images = images[:int(len(images)*size)]
-        labels = labels[:int(len(labels)*size)]
         training_index = int(training_size/10)
 
         #always take the last 20 as testing data
@@ -113,7 +110,7 @@ def experiment_one():
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=s, size=.2)
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=s)
         print '========================' + str(s) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
@@ -132,7 +129,7 @@ def experiment_two():
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=50, size=.2)
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
         print '========================' + str(n) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels, neighbors=n)
@@ -144,6 +141,6 @@ def experiment_two():
 
 
 if __name__ == "__main__":
-    experiment_one()
-    #experiment_two()
+    #experiment_one()
+    experiment_two()
 
