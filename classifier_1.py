@@ -97,6 +97,7 @@ def save_images(predicted, actual, images):
         elif predicted[x] != actual[x]:
             misclassified.append(images[x])
             labels.append(predicted[x])
+            k += 1
 
     for i in xrange(len(misclassified)):
         plt.imshow(misclassified[i], cmap = 'gray')
