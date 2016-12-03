@@ -48,7 +48,7 @@ def error_measure(predicted, actual):
 
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
-def handle_data(divisions=4, size=.1):
+def handle_data(training_size, size=.1):
     training_set = []
     training_labels = []
     testing_set = []
@@ -60,15 +60,15 @@ def handle_data(divisions=4, size=.1):
 
         images = images[:int(len(images)*size)]
         labels = labels[:int(len(labels)*size)]
+        training_index = int(training_size/10)
 
-        total = len(images)
-        split = int(total / divisions)
+        #always take the last 20 as testing data
+        test_images = images[len(images)-20:]
+        test_labels = labels[len(images)-20:]
 
-        test_images = images[0:split]
-        test_labels = labels[0:split]
-
-        train_images =  images[split:]
-        train_labels = labels[split:]
+        #take the indicated training set size
+        train_images =  images[0:training_index]
+        train_labels = labels[0:training_index]
 
         training_set.extend(train_images)
         training_labels.extend(train_labels)
@@ -105,22 +105,24 @@ def save_images(predicted, actual, images, d):
         plt.savefig(str(d) + "_" + title)
 
 def experiment_one():
-    divisions = [2,5,10,20,50]
+    sizes = [500, 1000, 5000,10000, 15000]
 
-    for d in divisions:
+    for s in sizes:
         training_set = []
         training_labels = []
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.2)
-        print '========================' + str(d) + ' ==================================='
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=s, size=.2)
+        print len(training_set)
+        print len(testing_set)
+        print '========================' + str(s) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
         save_classifier(classifier, training_set, training_labels)
         classifier = pickle.load(open('classifier_1.p', 'rb'))
         predicted = classify(testing_set, classifier)
-        save_images(predicted, testing_labels, raw_testing_set, d)
+        save_images(predicted, testing_labels, raw_testing_set, s)
         print error_measure(predicted, testing_labels)
 
 def experiment_two():
@@ -132,7 +134,7 @@ def experiment_two():
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=50, size=.2)
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=50, size=.2)
         print '========================' + str(n) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels, neighbors=n)
@@ -144,6 +146,6 @@ def experiment_two():
 
 
 if __name__ == "__main__":
-    #experiment_one()
-    experiment_two()
+    experiment_one()
+    #experiment_two()
 
