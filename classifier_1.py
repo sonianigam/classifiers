@@ -114,8 +114,6 @@ def experiment_one():
         testing_labels = []
 
         training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=s, size=.2)
-        print len(training_set)
-        print len(testing_set)
         print '========================' + str(s) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
