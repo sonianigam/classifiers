@@ -48,7 +48,7 @@ def error_measure(predicted, actual):
 
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
-def handle_data(divisions=4, iteration=0):
+def handle_data(divisions=4, size=30000):
     training_set = []
     training_labels = []
     testing_set = []
@@ -58,8 +58,8 @@ def handle_data(divisions=4, iteration=0):
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
-        images = images[:100]
-        labels = labels[:100]
+        images = images[:size]
+        labels = labels[:size]
 
         total = len(images)
         split = int(total / divisions)
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     testing_set = []
     testing_labels = []
 
-    training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data()
+    training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(size=30000)
 
     #build_classifier is a function that takes in training data and outputs an sklearn classifier.
     classifier = build_classifier(training_set, training_labels)
