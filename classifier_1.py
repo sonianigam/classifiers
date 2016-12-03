@@ -39,7 +39,6 @@ def save_classifier(classifier, training_set, training_labels):
 
 def classify(images, classifier):
     #runs the classifier on a set of images.
-    print "entered prediction"
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
@@ -49,7 +48,7 @@ def error_measure(predicted, actual):
 
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
-def handle_data(divisions=4, size=30000):
+def handle_data(divisions=4, size=.1):
     training_set = []
     training_labels = []
     testing_set = []
@@ -59,8 +58,8 @@ def handle_data(divisions=4, size=30000):
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
 
-        images = images[:size]
-        labels = labels[:size]
+        images = images[:int(len(images)*size)]
+        labels = labels[:int(len(labels)*size)]
 
         total = len(images)
         split = int(total / divisions)
@@ -87,13 +86,13 @@ def handle_data(divisions=4, size=30000):
 
     return training_set, training_labels, testing_set, testing_labels, raw_testing_set
 
-def save_images(predicted, actual, images):
+def save_images(predicted, actual, images, d):
     k = 0
     misclassified = []
     labels = []
     for x in xrange(len(images)):
         if k > 5:
-            return
+            break
         elif predicted[x] != actual[x]:
             misclassified.append(images[x])
             labels.append(predicted[x])
@@ -103,24 +102,25 @@ def save_images(predicted, actual, images):
         plt.imshow(misclassified[i], cmap = 'gray')
         title = str(random.randint(0, 1000))
         plt.title('Misclassified Image As: ' + str(labels[i]))
-        plt.savefig(title)
+        plt.savefig(str(d) + "_" + title)
 
 
 if __name__ == "__main__":
 
-    training_set = []
-    training_labels = []
-    testing_set = []
-    testing_labels = []
     divisions = [2,5,10]
 
     for d in divisions:
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=20)
+        training_set = []
+        training_labels = []
+        testing_set = []
+        testing_labels = []
+
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.5)
         print '========================' + str(d) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
         save_classifier(classifier, training_set, training_labels)
         classifier = pickle.load(open('classifier_1.p', 'rb'))
         predicted = classify(testing_set, classifier)
-        save_images(predicted, testing_labels, raw_testing_set)
+        save_images(predicted, testing_labels, raw_testing_set, d)
         print error_measure(predicted, testing_labels)
