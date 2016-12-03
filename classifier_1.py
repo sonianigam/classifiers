@@ -5,6 +5,7 @@ from mnist import load_mnist
 from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 
 def preprocess(images):
@@ -17,7 +18,7 @@ def build_classifier(images, labels):
     #this will actually build the classifier. In general, it
     #will call something from sklearn to build it, and it must
     #return the output of sklearn. Right now it does nothing.
-    classifier = KNeighborsClassifier(n_neighbors=10)
+    classifier = KNeighborsClassifier(n_neighbors=5)
 
     #labels = np.array(labels)
     #images = np.array(images)
@@ -96,10 +97,12 @@ def save_images(predicted, actual, images):
         elif predicted[x] != actual[x]:
             misclassified.append(images[x])
             labels.append(predicted[x])
-    for i in xrange(5):
+
+    for i in xrange(len(misclassified)):
         plt.imshow(misclassified[i], cmap = 'gray')
+        title = str(random.randint(0, 1000))
         plt.title('Misclassified Image As: ' + str(labels[i]))
-        plt.show()
+        plt.savefig(title)
 
 
 if __name__ == "__main__":
@@ -108,14 +111,15 @@ if __name__ == "__main__":
     training_labels = []
     testing_set = []
     testing_labels = []
+    divisions = [2,5,10]
 
-    training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(size=30000)
-
-    #build_classifier is a function that takes in training data and outputs an sklearn classifier.
-    classifier = build_classifier(training_set, training_labels)
-    save_classifier(classifier, training_set, training_labels)
-    classifier = pickle.load(open('classifier_1.p', 'rb'))
-    predicted = classify(testing_set, classifier)
-    save_images(predicted, testing_labels, raw_testing_set)
-
-    print error_measure(predicted, testing_labels)
+    for d in divisions:
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=20)
+        print '========================' + str(d) + ' ==================================='
+        #build_classifier is a function that takes in training data and outputs an sklearn classifier.
+        classifier = build_classifier(training_set, training_labels)
+        save_classifier(classifier, training_set, training_labels)
+        classifier = pickle.load(open('classifier_1.p', 'rb'))
+        predicted = classify(testing_set, classifier)
+        save_images(predicted, testing_labels, raw_testing_set)
+        print error_measure(predicted, testing_labels)
