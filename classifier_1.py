@@ -104,9 +104,7 @@ def save_images(predicted, actual, images, d):
         plt.title('Misclassified Image As: ' + str(labels[i]))
         plt.savefig(str(d) + "_" + title)
 
-
-if __name__ == "__main__":
-
+def experiment_one():
     divisions = [2,5,10]
 
     for d in divisions:
@@ -115,7 +113,7 @@ if __name__ == "__main__":
         testing_set = []
         testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.5)
+        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(divisions=d, size=.1)
         print '========================' + str(d) + ' ==================================='
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
@@ -124,3 +122,8 @@ if __name__ == "__main__":
         predicted = classify(testing_set, classifier)
         save_images(predicted, testing_labels, raw_testing_set, d)
         print error_measure(predicted, testing_labels)
+
+
+if __name__ == "__main__":
+    experiment_one()
+
