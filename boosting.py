@@ -1,5 +1,9 @@
 # import packages (including scikit-learn packages)
 from sklearn.ensemble import AdaBoostClassifier # Use this function for adaboosting
+from mnist import load_mnist
+from sklearn.metrics import confusion_matrix, f1_score
+import numpy as np
+from sklearn import svm
 
 def boosting_A(training_set, training_labels, testing_set, testing_labels):
 	'''
@@ -9,16 +13,24 @@ def boosting_A(training_set, training_labels, testing_set, testing_labels):
 		- training_labels: a 1-D numpy array that labels of training examples (size: the number of training examples)
 		- testing_set: a 2-D numpy array that contains testing examples  (size: the number of testing examples X the number of attributes)
 		- testing_labels: a 1-D numpy array that labels of testing examples (size: the number of testing examples)
-	
+
 	Returns:
-		- predicted_labels: a 1-D numpy array that contains the labels predicted by the classifier. Labels in this array should be sorted in the same order as testing_labels 
+		- predicted_labels: a 1-D numpy array that contains the labels predicted by the classifier. Labels in this array should be sorted in the same order as testing_labels
 		- confusion_matrix: a 2-D numpy array of confusion matrix (size: the number of classes X the number of classes)
 	'''
 
-    # Build boosting algorithm for question 6-A
- 
+	# Build boosting algorithm for question 6-A
+	classifier = AdaBoostClassifier()
 
-    return predicted_labels, confusion_matrix
+	training_labels.shape = training_labels.shape[0]
+
+	classifier.fit(training_set, training_labels)
+
+	predicted_labels = classifier.predict(testing_set)
+	conf_matrix = confusion_matrix(testing_labels, predicted_labels)
+	print conf_matrix
+	print "F MEASURE: " + str(f1_score(testing_labels, predicted_labels, average="macro"))
+	return predicted_labels, conf_matrix
 
 def boosting_B(training_set, training_labels, testing_set, testing_labels):
 	'''
@@ -28,23 +40,89 @@ def boosting_B(training_set, training_labels, testing_set, testing_labels):
 		- training_labels: a 1-D numpy array that labels of training examples (size: the number of training examples)
 		- testing_set: a 2-D numpy array that contains testing examples  (size: the number of testing examples X the number of attributes)
 		- testing_labels: a 1-D numpy array that labels of testing examples (size: the number of testing examples)
-	
+
 	Returns:
-		- predicted_labels: a 1-D numpy array that contains the labels predicted by the classifier. Labels in this array should be sorted in the same order as testing_labels 
+		- predicted_labels: a 1-D numpy array that contains the labels predicted by the classifier. Labels in this array should be sorted in the same order as testing_labels
 		- confusion_matrix: a 2-D numpy array of confusion matrix (size: the number of classes X the number of classes)
 	'''
-    # Build boosting algorithm for question 6-B
+	# Build boosting algorithm for question 6-B
+	classifier = AdaBoostClassifier(svm.SVC(probability=True, C=40))
+
+	training_labels.shape = training_labels.shape[0]
+
+	classifier.fit(training_set, training_labels)
+
+	predicted_labels = classifier.predict(testing_set)
+	conf_matrix = confusion_matrix(testing_labels, predicted_labels)
+	print conf_matrix
+	print "F MEASURE: " + str(f1_score(testing_labels, predicted_labels, average="macro"))
+	return predicted_labels, conf_matrix
+
+def preprocess(images):
+	#this function is suggested to help build your classifier.
+	#You might want to do something with the images before
+	#handing them to the classifier. Right now it does nothing.
+	return np.array([i.flatten() for i in images])
+
+def handle_data(training_size):
+	training_set = []
+	training_labels = []
+	testing_set = []
+	testing_labels = []
+
+	# Code for loading data
+	for x in range(10):
+		images, labels = load_mnist(digits=[x], path='.')
+		training_index = int(training_size/10)
+
+		#always take the last 20 as testing data
+		test_images = images[len(images)-20:]
+		test_labels = labels[len(images)-20:]
+
+		#take the indicated training set size
+		train_images =  images[0:training_index]
+		train_labels = labels[0:training_index]
+
+		training_set.extend(train_images)
+		training_labels.extend(train_labels)
+
+		testing_set.extend(test_images)
+		testing_labels.extend(test_labels)
 
 
-    return predicted_labels, confusion_matrix
+	# preprocessing
+	training_set = preprocess(training_set)
+	training_labels = preprocess(training_labels)
+	testing_set = preprocess(testing_set)
+	testing_labels = preprocess(testing_labels)
+
+	return training_set, training_labels, testing_set, testing_labels
 
 def main():
-    """
-    This function runs boosting_A() and boosting_B() for problem 7.
-    Load data set and perform adaboosting using boosting_A() and boosting_B()
-    """
+	"""
+	This function runs boosting_A() and boosting_B() for problem 7.
+	Load data set and perform adaboosting using boosting_A() and boosting_B()
+	"""
+	training_set, training_labels, testing_set, testing_labels = handle_data(15000)
+
+	print "########### BOOSTING A ############"
+	predicted_labels, confusion_matrix = boosting_A(
+		training_set,
+		training_labels,
+		testing_set,
+		testing_labels
+	)
+
+	print "########### BOOSTING B ############"
+	predicted_labels, confusion_matrix = boosting_B(
+		training_set,
+		training_labels,
+		testing_set,
+		testing_labels
+	)
+
 
 
 
 if __name__ == '__main__':
-    main()
+	main()

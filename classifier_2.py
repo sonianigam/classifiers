@@ -43,7 +43,6 @@ def classify(images, classifier):
 
 def error_measure(predicted, actual):
     conf_matrix = confusion_matrix(actual, predicted)
-    print conf_matrix
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 def handle_data(training_size):
@@ -141,5 +140,14 @@ def experiment_two():
 
 
 if __name__ == "__main__":
-    #experiment_one()
-    experiment_two()
+    training_set = []
+    training_labels = []
+    testing_set = []
+    testing_labels = []
+
+    training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
+    classifier = build_classifier(training_set, training_labels, c=40)
+    save_classifier(classifier, training_set, training_labels)
+    classifier = pickle.load(open('classifier_1.p', 'rb'))
+    predicted = classify(testing_set, classifier)
+    print error_measure(predicted, testing_labels)
