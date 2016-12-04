@@ -14,11 +14,11 @@ def preprocess(images):
     #handing them to the classifier. Right now it does nothing.
     return np.array([i.flatten() for i in images])
 
-def build_classifier(images, labels, gamma=0.001):
+def build_classifier(images, labels, kernel, c):
     #this will actually build the classifier. In general, it
     #will call something from sklearn to build it, and it must
     #return the output of sklearn. Right now it does nothing.
-    classifier = svm.SVC(gamma=gamma)
+    classifier = svm.SVC(C=c, kernel=kernel)
 
     #labels = np.array(labels)
     #images = np.array(images)
@@ -44,8 +44,6 @@ def classify(images, classifier):
 def error_measure(predicted, actual):
     conf_matrix = confusion_matrix(actual, predicted)
     print conf_matrix
-
-
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 def handle_data(training_size):
@@ -121,23 +119,25 @@ def experiment_one():
         print error_measure(predicted, testing_labels)
 
 def experiment_two():
-    neighbors = [0.0005, 0.001, 0.005, 0.01, 0.1, 0.5]
+    Cvals = [1, 5, 10, 100]
+    kernels = ["linear", "poly", "rbf", "sigmoid"]
 
-    for n in neighbors:
-        training_set = []
-        training_labels = []
-        testing_set = []
-        testing_labels = []
+    for c in Cvals:
+        for k in kernels:
+            training_set = []
+            training_labels = []
+            testing_set = []
+            testing_labels = []
 
-        training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
-        print '========================' + str(n) + ' ==================================='
-        #build_classifier is a function that takes in training data and outputs an sklearn classifier.
-        classifier = build_classifier(training_set, training_labels, gamma=n)
-        save_classifier(classifier, training_set, training_labels)
-        classifier = pickle.load(open('classifier_1.p', 'rb'))
-        predicted = classify(testing_set, classifier)
-        #save_images(predicted, testing_labels, raw_testing_set, n)
-        print error_measure(predicted, testing_labels)
+            training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
+            print '======================== C:' + str(c) + ', Kernel: ' + str(k) + ' ==================================='
+            #build_classifier is a function that takes in training data and outputs an sklearn classifier.
+            classifier = build_classifier(training_set, training_labels, c=c, kernel=k)
+            save_classifier(classifier, training_set, training_labels)
+            classifier = pickle.load(open('classifier_1.p', 'rb'))
+            predicted = classify(testing_set, classifier)
+            #save_images(predicted, testing_labels, raw_testing_set, n)
+            print error_measure(predicted, testing_labels)
 
 
 if __name__ == "__main__":
