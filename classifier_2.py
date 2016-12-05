@@ -42,14 +42,14 @@ def classify(images, classifier):
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
+    #returns orginal error measure as provided in starter code
     return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
 
 def exp_error_measure(predicted, actual):
-    conf_matrix = confusion_matrix(actual, predicted)
-    print conf_matrix
     # make a confusion matrix
     conf_matrix = confusion_matrix(actual, predicted)
-    #print conf_matrix
+    print conf_matrix
+    #returns F1-meausure for experiments
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 
@@ -139,14 +139,10 @@ def experiment_one():
 
         # predict testing data
         predicted = classify(testing_set, classifier)
+        #save misclassified images
         save_images(predicted, testing_labels, raw_testing_set, s)
+        # print the f-measure and conf matrix
         print exp_error_measure(predicted, testing_labels)
-
-        # save misclassified images
-        # save_images(predicted, testing_labels, raw_testing_set, s)
-
-        # print the f-measure
-        print error_measure(predicted, testing_labels)
 
 def experiment_two():
     # test C-values and kernels in a grid search
@@ -169,15 +165,12 @@ def experiment_two():
             # save the classifier
             save_classifier(classifier, training_set, training_labels)
             classifier = pickle.load(open('classifier_2.p', 'rb'))
+            # predict testing data
             predicted = classify(testing_set, classifier)
+            #save misclassified images
             save_images(predicted, testing_labels, raw_testing_set, n)
+            # print the f1 measure and conf matrix
             print exp_error_measure(predicted, testing_labels)
-
-            # save misclassified images
-            # save_images(predicted, testing_labels, raw_testing_set, n)
-
-            # print the f1 measure
-            print error_measure(predicted, testing_labels)
 
 
 if __name__ == "__main__":
