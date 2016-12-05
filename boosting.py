@@ -5,6 +5,7 @@ from mnist import load_mnist
 from sklearn.metrics import confusion_matrix, f1_score
 import numpy as np
 from sklearn import svm
+#Partners: Daniel Nussbaum and Sonia Nigam
 
 def boosting_A(training_set, training_labels, testing_set, testing_labels):
 	'''

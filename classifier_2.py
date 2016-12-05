@@ -6,6 +6,7 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+#Partners: Daniel Nussbaum and Sonia Nigam
 
 
 def preprocess(images):

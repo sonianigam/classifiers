@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+#Partners: Daniel Nussbaum and Sonia Nigam
 
 def preprocess(images):
     #this function is suggested to help build your classifier.
