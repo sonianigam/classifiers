@@ -7,6 +7,7 @@ from mnist import load_mnist
 # only returns images of digit 8
 images, labels = load_mnist(digits=[8], path='.')
 
+#shows 50 images of the digit 8
 for i in xrange(50):
 	plt.imshow(images[i], cmap = 'gray')
 	plt.title('Handwritten image of the digit ' + str(labels[i]))
@@ -21,4 +22,5 @@ for x in xrange(0,10):
 	print "The total number of images for digit " + str(x) + ": "+ str(len(images))
 	total += len(images)
 
+#prints total number of images
 print "The total number of images: " + str(total)
