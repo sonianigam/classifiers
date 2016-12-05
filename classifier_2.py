@@ -20,10 +20,10 @@ def build_classifier(images, labels, kernel, c):
     #return the output of sklearn. Right now it does nothing.
     classifier = svm.SVC(C=c, kernel=kernel)
 
-    #labels = np.array(labels)
-    #images = np.array(images)
+    # reshape the data
     labels.shape = labels.shape[0]
 
+    # fit the classifier
     classifier.fit(images, labels)
 
     return classifier
@@ -47,31 +47,38 @@ def error_measure(predicted, actual):
 def exp_error_measure(predicted, actual):
     conf_matrix = confusion_matrix(actual, predicted)
     print conf_matrix
+    # make a confusion matrix
+    conf_matrix = confusion_matrix(actual, predicted)
+    #print conf_matrix
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
 
 
 def handle_data(training_size):
+    # loads the mnist data and assembles a training set (with labels) of size
+    # training_size. Also gets a testing set.
+
     training_set = []
     training_labels = []
     testing_set = []
     testing_labels = []
 
-    # Code for loading data
+    # For each digit
     for x in range(10):
         images, labels = load_mnist(digits=[x], path='.')
         training_index = int(training_size/10)
 
-        #always take the last 20 as testing data
+        # get the testing set from the end
+        # always take the last 20 as testing data
         test_images = images[len(images)-20:]
         test_labels = labels[len(images)-20:]
 
-        #take the indicated training set size
+        # take the indicated training set size
         train_images =  images[0:training_index]
         train_labels = labels[0:training_index]
 
+        # build the lists
         training_set.extend(train_images)
         training_labels.extend(train_labels)
-
         testing_set.extend(test_images)
         testing_labels.extend(test_labels)
 
@@ -89,14 +96,19 @@ def save_images(predicted, actual, images, d):
     k = 0
     misclassified = []
     labels = []
+
+    # for all images
     for x in xrange(len(images)):
+        # break if you already have 5 misclassified images saved
         if k > 5:
             break
+        # if they aren't the same, append the image and the misclassified label
         elif predicted[x] != actual[x]:
             misclassified.append(images[x])
             labels.append(predicted[x])
             k += 1
 
+    # save the images
     for i in xrange(len(misclassified)):
         plt.imshow(misclassified[i], cmap = 'gray')
         title = str(random.randint(0, 1000))
@@ -104,6 +116,8 @@ def save_images(predicted, actual, images, d):
         plt.savefig(str(d) + "_" + title)
 
 def experiment_one():
+    # varys the size of the training set
+
     sizes = [500, 1000, 5000,10000, 15000]
 
     for s in sizes:
@@ -112,18 +126,34 @@ def experiment_one():
         testing_set = []
         testing_labels = []
 
+        # get the data
         training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=s)
         print '========================' + str(s) + ' ==================================='
-        #build_classifier is a function that takes in training data and outputs an sklearn classifier.
+
+        # build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
+
+        # save the classifier
         save_classifier(classifier, training_set, training_labels)
         classifier = pickle.load(open('classifier_2.p', 'rb'))
+
+        # predict testing data
         predicted = classify(testing_set, classifier)
+<<<<<<< HEAD
         save_images(predicted, testing_labels, raw_testing_set, s)
         print exp_error_measure(predicted, testing_labels)
+=======
+
+        # save misclassified images
+        # save_images(predicted, testing_labels, raw_testing_set, s)
+
+        # print the f-measure
+        print error_measure(predicted, testing_labels)
+>>>>>>> d4e3ef00411a606fcae8b8b46f5b6ca164621e27
 
 def experiment_two():
-    Cvals = [1, 5, 10, 100]
+    # test C-values and kernels in a grid search
+    Cvals = [1, 5, 10, 20, 30, 40, 50, 60]
     kernels = ["linear", "poly", "rbf", "sigmoid"]
 
     for c in Cvals:
@@ -133,15 +163,27 @@ def experiment_two():
             testing_set = []
             testing_labels = []
 
+            # get the data
             training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
             print '======================== C:' + str(c) + ', Kernel: ' + str(k) + ' ==================================='
             #build_classifier is a function that takes in training data and outputs an sklearn classifier.
             classifier = build_classifier(training_set, training_labels, c=c, kernel=k)
+
+            # save the classifier
             save_classifier(classifier, training_set, training_labels)
             classifier = pickle.load(open('classifier_2.p', 'rb'))
             predicted = classify(testing_set, classifier)
+<<<<<<< HEAD
             save_images(predicted, testing_labels, raw_testing_set, n)
             print exp_error_measure(predicted, testing_labels)
+=======
+
+            # save misclassified images
+            # save_images(predicted, testing_labels, raw_testing_set, n)
+
+            # print the f1 measure
+            print error_measure(predicted, testing_labels)
+>>>>>>> d4e3ef00411a606fcae8b8b46f5b6ca164621e27
 
 
 if __name__ == "__main__":
@@ -150,9 +192,14 @@ if __name__ == "__main__":
     testing_set = []
     testing_labels = []
 
+    # get the data and build the classifier
     training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
-    classifier = build_classifier(training_set, training_labels, kernel="linear", c=40,)
+    classifier = build_classifier(training_set, training_labels, kernel="rbf", c=40)
+
+    # save the classifier
     save_classifier(classifier, training_set, training_labels)
     classifier = pickle.load(open('classifier_2.p', 'rb'))
+
+    # make classifications and print the error measure
     predicted = classify(testing_set, classifier)
     print error_measure(predicted, testing_labels)
