@@ -139,17 +139,14 @@ def experiment_one():
 
         # predict testing data
         predicted = classify(testing_set, classifier)
-<<<<<<< HEAD
         save_images(predicted, testing_labels, raw_testing_set, s)
         print exp_error_measure(predicted, testing_labels)
-=======
 
         # save misclassified images
         # save_images(predicted, testing_labels, raw_testing_set, s)
 
         # print the f-measure
         print error_measure(predicted, testing_labels)
->>>>>>> d4e3ef00411a606fcae8b8b46f5b6ca164621e27
 
 def experiment_two():
     # test C-values and kernels in a grid search
@@ -173,17 +170,14 @@ def experiment_two():
             save_classifier(classifier, training_set, training_labels)
             classifier = pickle.load(open('classifier_2.p', 'rb'))
             predicted = classify(testing_set, classifier)
-<<<<<<< HEAD
             save_images(predicted, testing_labels, raw_testing_set, n)
             print exp_error_measure(predicted, testing_labels)
-=======
 
             # save misclassified images
             # save_images(predicted, testing_labels, raw_testing_set, n)
 
             # print the f1 measure
             print error_measure(predicted, testing_labels)
->>>>>>> d4e3ef00411a606fcae8b8b46f5b6ca164621e27
 
 
 if __name__ == "__main__":
