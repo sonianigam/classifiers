@@ -23,11 +23,16 @@ def boosting_A(training_set, training_labels, testing_set, testing_labels):
 	# Build boosting algorithm for question 6-A
 	classifier = AdaBoostClassifier()
 
+	# reshape the training data
 	training_labels.shape = training_labels.shape[0]
 
+	# fit the data to the classifier
 	classifier.fit(training_set, training_labels)
 
+	# make predictions
 	predicted_labels = classifier.predict(testing_set)
+
+	# get and print a confusion matrix and f1-score
 	conf_matrix = confusion_matrix(testing_labels, predicted_labels)
 	print conf_matrix
 	print "F MEASURE: " + str(f1_score(testing_labels, predicted_labels, average="macro"))
@@ -47,18 +52,19 @@ def boosting_B(training_set, training_labels, testing_set, testing_labels):
 		- confusion_matrix: a 2-D numpy array of confusion matrix (size: the number of classes X the number of classes)
 	'''
 	# Build boosting algorithm for question 6-B
-	print "set classifier"
-	#classifier = AdaBoostClassifier(svm.SVC(probability=True, C=40, kernel='linear', loss='hinge'))
-	#classifier = AdaBoostClassifier(SGDClassifier(loss='hinge'), algorithm='SAMME')
+	# set classifier
 	classifier = AdaBoostClassifier(svm.LinearSVC(), algorithm='SAMME')
 
-	print "changing shape"
+	# changing shape
 	training_labels.shape = training_labels.shape[0]
 
-	print "fitting classifer"
+	# fitting classifer
 	classifier.fit(training_set, training_labels)
-	print "finding predictions"
+
+	# finding predictions
 	predicted_labels = classifier.predict(testing_set)
+
+	# getting confusion matrix and f1-measure
 	conf_matrix = confusion_matrix(testing_labels, predicted_labels)
 	print conf_matrix
 	print "F MEASURE: " + str(f1_score(testing_labels, predicted_labels, average="macro"))
@@ -71,38 +77,43 @@ def preprocess(images):
 	return np.array([i.flatten() for i in images])
 
 def handle_data(training_size):
-	training_set = []
-	training_labels = []
-	testing_set = []
-	testing_labels = []
+    # loads the mnist data and assembles a training set (with labels) of size
+    # training_size. Also gets a testing set.
 
-	# Code for loading data
-	for x in range(10):
-		images, labels = load_mnist(digits=[x], path='.')
-		training_index = int(training_size/10)
+    training_set = []
+    training_labels = []
+    testing_set = []
+    testing_labels = []
 
-		#always take the last 20 as testing data
-		test_images = images[len(images)-20:]
-		test_labels = labels[len(images)-20:]
+    # For each digit
+    for x in range(10):
+        images, labels = load_mnist(digits=[x], path='.')
+        training_index = int(training_size/10)
 
-		#take the indicated training set size
-		train_images =  images[0:training_index]
-		train_labels = labels[0:training_index]
+        # get the testing set from the end
+        # always take the last 20 as testing data
+        test_images = images[len(images)-20:]
+        test_labels = labels[len(images)-20:]
 
-		training_set.extend(train_images)
-		training_labels.extend(train_labels)
+        # take the indicated training set size
+        train_images =  images[0:training_index]
+        train_labels = labels[0:training_index]
 
-		testing_set.extend(test_images)
-		testing_labels.extend(test_labels)
+        # build the lists
+        training_set.extend(train_images)
+        training_labels.extend(train_labels)
+        testing_set.extend(test_images)
+        testing_labels.extend(test_labels)
 
 
-	# preprocessing
-	training_set = preprocess(training_set)
-	training_labels = preprocess(training_labels)
-	testing_set = preprocess(testing_set)
-	testing_labels = preprocess(testing_labels)
+    # preprocessing
+    training_set = preprocess(training_set)
+    training_labels = preprocess(training_labels)
+    testing_set = preprocess(testing_set)
+    testing_labels = preprocess(testing_labels)
 
-	return training_set, training_labels, testing_set, testing_labels
+    return training_set, training_labels, testing_set, testing_labels
+
 
 def main():
 	"""
