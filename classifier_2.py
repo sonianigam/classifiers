@@ -33,7 +33,7 @@ def save_classifier(classifier, training_set, training_labels):
     #this saves the classifier to a file "classifier" that we will
     #load from. It also saves the data that the classifier was trained on.
     import pickle
-    pickle.dump(classifier, open('classifier_1.p', 'wb'))
+    pickle.dump(classifier, open('classifier_2.p', 'wb'))
 
 
 
@@ -112,7 +112,7 @@ def experiment_one():
         #build_classifier is a function that takes in training data and outputs an sklearn classifier.
         classifier = build_classifier(training_set, training_labels)
         save_classifier(classifier, training_set, training_labels)
-        classifier = pickle.load(open('classifier_1.p', 'rb'))
+        classifier = pickle.load(open('classifier_2.p', 'rb'))
         predicted = classify(testing_set, classifier)
         save_images(predicted, testing_labels, raw_testing_set, s)
         print error_measure(predicted, testing_labels)
@@ -133,7 +133,7 @@ def experiment_two():
             #build_classifier is a function that takes in training data and outputs an sklearn classifier.
             classifier = build_classifier(training_set, training_labels, c=c, kernel=k)
             save_classifier(classifier, training_set, training_labels)
-            classifier = pickle.load(open('classifier_1.p', 'rb'))
+            classifier = pickle.load(open('classifier_2.p', 'rb'))
             predicted = classify(testing_set, classifier)
             #save_images(predicted, testing_labels, raw_testing_set, n)
             print error_measure(predicted, testing_labels)
@@ -146,8 +146,8 @@ if __name__ == "__main__":
     testing_labels = []
 
     training_set, training_labels, testing_set, testing_labels, raw_testing_set = handle_data(training_size=15000)
-    classifier = build_classifier(training_set, training_labels, c=40)
+    classifier = build_classifier(training_set, training_labels, kernel="linear", c=40,)
     save_classifier(classifier, training_set, training_labels)
-    classifier = pickle.load(open('classifier_1.p', 'rb'))
+    classifier = pickle.load(open('classifier_2.p', 'rb'))
     predicted = classify(testing_set, classifier)
     print error_measure(predicted, testing_labels)
