@@ -1,5 +1,6 @@
 # import packages (including scikit-learn packages)
 from sklearn.ensemble import AdaBoostClassifier # Use this function for adaboosting
+from sklearn.linear_model import SGDClassifier
 from mnist import load_mnist
 from sklearn.metrics import confusion_matrix, f1_score
 import numpy as np
@@ -46,12 +47,17 @@ def boosting_B(training_set, training_labels, testing_set, testing_labels):
 		- confusion_matrix: a 2-D numpy array of confusion matrix (size: the number of classes X the number of classes)
 	'''
 	# Build boosting algorithm for question 6-B
-	classifier = AdaBoostClassifier(svm.SVC(probability=True, C=40))
+	print "set classifier"
+	#classifier = AdaBoostClassifier(svm.SVC(probability=True, C=40, kernel='linear', loss='hinge'))
+	#classifier = AdaBoostClassifier(SGDClassifier(loss='hinge'), algorithm='SAMME')
+	classifier = AdaBoostClassifier(svm.LinearSVC(), algorithm='SAMME')
 
+	print "changing shape"
 	training_labels.shape = training_labels.shape[0]
 
+	print "fitting classifer"
 	classifier.fit(training_set, training_labels)
-
+	print "finding predictions"
 	predicted_labels = classifier.predict(testing_set)
 	conf_matrix = confusion_matrix(testing_labels, predicted_labels)
 	print conf_matrix
