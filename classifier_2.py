@@ -42,8 +42,13 @@ def classify(images, classifier):
     return classifier.predict(images)
 
 def error_measure(predicted, actual):
+    return np.count_nonzero(abs(predicted - actual))/float(len(predicted))
+
+def exp_error_measure(predicted, actual):
     conf_matrix = confusion_matrix(actual, predicted)
+    print conf_matrix
     return sklearn.metrics.f1_score(actual, predicted, average="macro")
+
 
 def handle_data(training_size):
     training_set = []
@@ -115,7 +120,7 @@ def experiment_one():
         classifier = pickle.load(open('classifier_2.p', 'rb'))
         predicted = classify(testing_set, classifier)
         save_images(predicted, testing_labels, raw_testing_set, s)
-        print error_measure(predicted, testing_labels)
+        print exp_error_measure(predicted, testing_labels)
 
 def experiment_two():
     Cvals = [1, 5, 10, 100]
@@ -135,8 +140,8 @@ def experiment_two():
             save_classifier(classifier, training_set, training_labels)
             classifier = pickle.load(open('classifier_2.p', 'rb'))
             predicted = classify(testing_set, classifier)
-            #save_images(predicted, testing_labels, raw_testing_set, n)
-            print error_measure(predicted, testing_labels)
+            save_images(predicted, testing_labels, raw_testing_set, n)
+            print exp_error_measure(predicted, testing_labels)
 
 
 if __name__ == "__main__":
